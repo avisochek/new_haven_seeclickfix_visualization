@@ -140,19 +140,36 @@ function draw(geo_data) {
 		d3.select('input').on("change",function(){update('201'.concat(this.value.toString()))});
 	}
 
-	d3.select('body')
-		.on('click',function(){
-			
+	d3.select('body').on('click',function(){
+		d3.select('#cover_text').html(
+			"<h3>This is a choose your own adventure visualization.</h3>
+			<h3>Use the left panel to </h3>
+			<h3>or select one of the animations on the top</h3>
+			<p>click anywhere to continue...</p>"
+			);
+		d3.select('body').on('click',function(){
+			d3.select('#cover_page').remove()
+			d3.csv("../../data/nh4.csv", function(d) {
+				return d;
+  			}, plot_points);
 		});
-	d3.csv("../data/scfnh6.csv", function(d) {
-		return d;
-  	}, plot_points);
+	});
 };
 
       </script>
   </head>
 <body>
-  <div id ='cover_page' style="height:100%;width:100%;position:absolute;background-color:blue;opacity:0.5"></div>
+	<div id ='cover_page'>
+		<div id ='opaque_cover' style="height:100%;width:100%;position:absolute;background-color:blue;opacity:0.5"></div>
+		<div id ='cover_text' style="position:relative;text-align:center">
+			<h1>Civic Issues In New Haven, CT</h1>
+			<h2>by Allan Visochek</h2>
+			<h4>Using a dataset obtained from the SeeClickFix API</h4>
+			<h4>Last updated June,6 2015</h4>
+			<p>click anywhere to continue...</p>
+		</div>
+		
+	</div>	
   <input type='range' min='2' max='5' steps='4'></input>
   <script type="text/javascript">
   /*

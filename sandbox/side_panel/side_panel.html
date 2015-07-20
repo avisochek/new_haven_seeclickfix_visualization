@@ -5,7 +5,11 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
     <style>
     </style>
-    <script type="text/javascript">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="color_map.js"></script>
+	<script type="text/javascript">
 
 
   
@@ -20,8 +24,8 @@ function draw(geo_data) {
 		.attr("width", width + margin)
 		.attr("height", height + margin)
 		.append('g')
-		.attr('class', 'map')
-		.style('position','relative');
+		.attr('class', 'map');
+
 
 
 	var projection = d3.geo.mercator()
@@ -69,7 +73,10 @@ function draw(geo_data) {
 					'month':d.created_at.substring(5,7),
 					'hour':d.created_at.substring(11,13),
 					'x':projection([d.lng,d.lat])[0],
-					'y':projection([d.lng,d.lat])[1]}
+					'y':projection([d.lng,d.lat])[1],
+					'rating':d.rating,
+					'status':d.status,
+					'summary':d.summary}
 				});
 		})
 //debugger;
@@ -81,16 +88,13 @@ function draw(geo_data) {
 			.selectAll("circle")
 			.data(transformed_data)
 
-		
 		circles.enter()
 			.append("circle")
 			.attr("cx",function(d) {return d.values.x;})
 			.attr("cy",function(d) {return d.values.y;})
-			.attr("r",2)
+			.attr("r",function(d){return Math.sqrt(d.values.rating)})
 			.attr('opacity',0)
-			.style("fill","red")
-			//YOUR CODE HERE
-	
+			.style("fill",function(d){return color_map(d.values.summary);});
 
 		function update(year,month,hour) {
 			/*var filtered = transformed_data.filter(function(d) {
@@ -140,35 +144,37 @@ function draw(geo_data) {
 		d3.select('input').on("change",function(){update('201'.concat(this.value.toString()))});
 	}
 
-	d3.select('body').on('click',function(){
-		d3.select('#cover_text').html(
-			"<h3>This is a choose your own adventure visualization.</h3><h3>Use the left panel to </h3><h3>or select one of the animations on the top</h3><p>click anywhere to continue...</p>"
-			);
-		d3.select('body').on('click',function(){
-			d3.select('#cover_page').remove()
-			d3.csv("../../data/nh4.csv", function(d) {
-				return d;
-  			}, plot_points);
-		});
-	});
+	d3.csv("../../data/nh4.2.csv", function(d) {
+		return d;
+  	}, plot_points);
 };
 
       </script>
   </head>
 <body>
-	<div id ='cover_page'>
-		<div id ='opaque_cover' style="height:100%;width:100%;position:absolute;background-color:blue;opacity:0.5"></div>
-		<div id ='cover_text' style="position:relative;text-align:center">
-			<h1>Civic Issues In New Haven, CT</h1>
-			<h2>by Allan Visochek</h2>
-			<h4>Using a dataset obtained from the SeeClickFix API</h4>
-			<h4>Last updated June,6 2015</h4>
-			<p>click anywhere to continue...</p>
+	<div id="side_bar" style="height:500px;width:200px;background-color:blue;position:absolute;opacity:.8">
+		<div style="background-color:red;opacity:.2">
+			<div>
+			<span id="year" style="background:2px">year</span>
+			<span id="month" style="background:2px">month</span>
+			<span id="time_of_day" style="background:2px">time_of_day</span>
 		</div>
-		
-	</div>	
-  <input type='range' min='2' max='5' steps='4'></input>
-  <script type="text/javascript">
+	</div>
+	<!--<div id="container-fluid" style="height:100%">
+		<div id="row" style="height:100%;background-color:red">
+	  		<!--<h1></h1>
+  			<div class="col-md-3" style="background-color:blue;position:fixed">
+				<input type='range' min='2' max='5' steps='4'></input>
+  			</div>
+
+			<div class="col-md-3" style="background-color:yellow">
+				<input type='range' min='2' max='5' steps='4'></input>
+  			</div>
+			<!--<div id="map_container" class="col-md-3" style="height:100%;background-color:green"></div>
+		</div>
+	</div>-->
+
+<script type="text/javascript">
   /*
     Use D3 to load the GeoJSON file
     */
